@@ -24,20 +24,22 @@ class LavageController extends Controller
     public function index()
     {
         $user_id = auth()->user()->id;
+        $username = auth()->user()->username;
 
-        $types_lavage = TypeLavage::where('user_id', $user_id);
-        $communes = DB::table('communes')->get();
-        $lavages = Lavage::where('user_id', $user_id)->get();
-
-        $nombreEmployes = [];
-        foreach ($lavages as $lavage) {
-            $nombre = $lavage->employees->count();
-            $nombreEmployes[$lavage->id] = $nombre;
+        if(!auth()->check()) {
+            return response()->json([ 'message' => 'Veuillez vous connecter' ]);
         }
 
-        return view('pages.manager.lavages.index',
-            compact('lavages', 'types_lavage', 'communes', 'nombreEmployes')
-        );
+        $types_lavage = TypeLavage::where('user_id', $user_id);
+        $lavages = Lavage::where('user_id', $user_id)->get();
+
+        return response()->json([
+            'message' => 'Liste des lavages de' . $username,
+            'data' => [
+                'type_lavage' => $types_lavage,
+                'lavages' => $lavages,
+            ]
+        ]);
     }
 
     public function create()
@@ -50,40 +52,42 @@ class LavageController extends Controller
 
     public function store(Request $request) {
 
-        try {
+        $imageName = $request->photo->store('products');
 
-            $imageName = $request->photo->store('products');
+        $statut = 'actif';
 
-            $statut = 'actif';
+        $lavage = new Lavage();
+        $lavage->lavage_name = $request->lavage_name;
+        $lavage->status = $statut;
+        $lavage->commune()->associate($request->commune_id);
+        $lavage->photo = $imageName;
+        $lavage->user_id = auth()->id();
+        $lavage->save();
 
-            $lavage = new Lavage();
-            $lavage->lavage_name = $request->lavage_name;
-            $lavage->status = $statut;
-            $lavage->commune()->associate($request->commune_id);
-            $lavage->photo = $imageName;
-            $lavage->user_id = auth()->id();
-            $lavage->save();
-
-            if($lavage) {
-                foreach ($request->type_lavage as $types_id) {
-                    LavageType::create([
-                        'lavage_id' => $lavage->id,
-                        'type_lavage_id' => $types_id,
-                        'user_id' => auth()->id(),
-                    ]);
-                }
+        if($lavage) {
+            foreach ($request->type_lavage as $types_id) {
+                LavageType::create([
+                    'lavage_id' => $lavage->id,
+                    'type_lavage_id' => $types_id,
+                    'user_id' => auth()->id(),
+                ]);
+                $typesLavage[] = $types_id;
             }
-            return redirect()->route('lavage.index');
-
-        } catch (\Throwable $th) {
-            return redirect()->back()->withErrors('error', 'Une erreur s\'est produite')->withInput();
         }
+        return response()->json([
+            'message' => 'Lavage enregistré avec succès',
+            'data' => [
+                'lavage' => $lavage,
+                'typesLavage' => $typesLavage
+            ]
+        ], 201);
 
     }
 
     public function show($id) {
 
         $lavage = Lavage::find($id);
+        $user_id = auth()->user()->id;
 
         if(!$lavage)
         {
@@ -92,42 +96,31 @@ class LavageController extends Controller
             ], 404);
         }
 
-        return response()->json([
-            'message' => 'Données du lavage: ' . $lavage->lavage_name,
-            'data' => $lavage,
-        ], 200);
-
-    }
-    public function delete($lavage_id) {
-
-        $lavage = Lavage::find($lavage_id);
-        $lavagesTypes = LavageType::where('lavage_id', $lavage_id);
-        $lavage->delete();
-        $lavagesTypes->delete();
-        return redirect()->route('lavage.index');
-
-    }
-
-    public function edit($id) {
-
-        $lavage_id = Crypt::decryptString($id);
-
-        $lavage = Lavage::findOrFail($lavage_id);
-
-        $user_id = auth()->user()->id;
+        if($lavage->user_id !== $user_id)
+        {
+            return response()->json([
+                'message' => 'Ce lavage reste introuvable !'
+            ], 404);
+        }
 
         $typesLavages = TypeLavage::where('user_id', $user_id)->get();
 
-        $associatedTypes = LavageType::where('lavage_id', $lavage_id)->pluck('type_lavage_id')->toArray();
+        $associatedTypes = LavageType::where('lavage_id', $lavage->id)->pluck('type_lavage_id')->toArray();
 
-        $communes = Commune::all();
+        return response()->json([
+            'message' => 'Données du lavage: ' . $lavage->lavage_name,
+            'data' => [
+                'lavage' => $lavage,
+                'typesLavages' => $typesLavages,
+                'associatedTypes' => $associatedTypes
+            ]
+        ], 200);
 
-        return view('pages.manager.lavages.edit',
-           compact('lavage', 'communes', 'associatedTypes', 'typesLavages')
-        );
     }
     public function update(Request $request, $lavage_id)
     {
+
+        dd('OK');
 
         $lavage = Lavage::find($lavage_id);
 
@@ -137,54 +130,67 @@ class LavageController extends Controller
             ]);
         }
 
-        if(auth()->user()->id !== $lavage->user_id)
-        {
-            return response()->json([
-                'message' => "Action non autorisée !"
-            ]);
+        if($lavage) {
+            return response()->json([ 'message' => 'OK' ]);
         }
 
-        $data = [
-            'lavage_name' => $request->input('lavage_name'),
-            'commune_id' => $request->input('commune_id'),
-            'status' => $request->input('status'),
-        ];
+        // if(auth()->user()->id !== $lavage->user_id)
+        // {
+        //     return response()->json([
+        //         'message' => "Action non autorisée !"
+        //     ]);
+        // }
 
-        if ($request->hasFile('photo')) {
+        // $data = [
+        //     'lavage_name' => $request->input('lavage_name'),
+        //     'commune_id' => $request->input('commune_id'),
+        //     'status' => $request->input('status'),
+        // ];
 
-            Storage::delete($lavage->photo);
+        // if ($request->hasFile('photo')) {
 
-            $imageName = $request->file('photo')->store('products');
+        //     Storage::delete($lavage->photo);
 
-            $data['photo'] = $imageName;
-        }
+        //     $imageName = $request->file('photo')->store('products');
 
-        $lavage->update($data);
+        //     $data['photo'] = $imageName;
+        // }
 
-        if ($request->has('type_lavage')) {
-            $typesLavage = $request->input('type_lavage', []);
+        // $lavage->update($data);
 
-            $syncData = [];
-            foreach ($typesLavage as $type_id) {
-                $syncData[$type_id] = ['user_id' => auth()->id()];
-            }
-            $lavage->typesLavage()->sync($syncData);
+        // if ($request->has('type_lavage')) {
+        //     $typesLavage = $request->input('type_lavage', []);
 
-            $typesToDetach = $lavage->typesLavage()->whereNotIn('type_lavage_id', $typesLavage)->pluck('type_lavage_id')->toArray();
+        //     $syncData = [];
+        //     foreach ($typesLavage as $type_id) {
+        //         $syncData[$type_id] = ['user_id' => auth()->id()];
+        //     }
+        //     $lavage->typesLavage()->sync($syncData);
 
-            if (!empty($typesToDetach)) {
-                $lavage->typesLavage()->detach($typesToDetach);
-            }
+        //     $typesToDetach = $lavage->typesLavage()->whereNotIn('type_lavage_id', $typesLavage)->pluck('type_lavage_id')->toArray();
 
-            $lavage->typesLavage()->updateExistingPivot($typesLavage, ['created_at' => now(), 'updated_at' => now()]);
-        }
+        //     if (!empty($typesToDetach)) {
+        //         $lavage->typesLavage()->detach($typesToDetach);
+        //     }
 
-        return response()->json([
-            'message' => 'Mise à jour effectuée avec succès',
-            'data' => [
-                'lavage' => $lavage,
-                'type_lavage' => $lavage->typesLavage
-            ]
-        ]);
+        //     $lavage->typesLavage()->updateExistingPivot($typesLavage, ['created_at' => now(), 'updated_at' => now()]);
+        // }
+
+        // return response()->json([
+        //     'message' => 'Mise à jour effectuée avec succès',
+        //     'data' => [
+        //         'lavage' => $lavage,
+        //         'type_lavage' => $lavage->typesLavage
+        //     ]
+        // ]);
+    }
+    public function delete($lavage_id) {
+
+        $lavage = Lavage::find($lavage_id);
+        $lavagesTypes = LavageType::where('lavage_id', $lavage_id);
+        $lavage->delete();
+        $lavagesTypes->delete();
+        return redirect()->route('lavage.index');
+
     }
 }

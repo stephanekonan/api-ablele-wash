@@ -42,7 +42,6 @@ class AuthController extends Controller
             'user' => $user,
         ], 201);
     }
-
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -77,7 +76,6 @@ class AuthController extends Controller
             'message' => 'Invalid login credentials'
         ], 401);
     }
-
     public function logout(Request $request)
     {
         $tokens = $request->user()->tokens;
