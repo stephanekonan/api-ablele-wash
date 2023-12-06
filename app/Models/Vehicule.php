@@ -17,6 +17,7 @@ class Vehicule extends Model
         'driver_name',
         'driver_email',
         'commune',
+        'user_id',
     ];
 
     public function commandes()

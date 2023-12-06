@@ -18,17 +18,6 @@ class UserController extends Controller
         ]);
     }
 
-    public function products()
-    {
-
-        $products = Product::all();
-
-        return response()->json([
-            'data' => $products
-        ]);
-        
-    }
-
     public function users()
     {
         $users = User::all();
