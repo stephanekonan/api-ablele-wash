@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\Api\Auth;
 
 use App\Models\User;
 use Illuminate\Support\Str;
@@ -14,10 +14,6 @@ use Illuminate\Auth\Events\PasswordReset;
 
 class ResetPasswordController extends Controller
 {
-    public function create()
-    {
-        return view('pages.auth.forget-password');
-    }
     public function send(Request $request)
     {
 

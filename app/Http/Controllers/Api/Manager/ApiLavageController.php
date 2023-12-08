@@ -1,26 +1,21 @@
 <?php
 
-namespace App\Http\Controllers\Manager;
+namespace App\Http\Controllers\Api\Manager;
 
 use App\Models\Lavage;
 use App\Models\Commune;
-use App\Models\Employe;
-use App\Models\Product;
-use App\Models\Commande;
 use App\Models\LavageType;
 use App\Models\TypeLavage;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
 
-class LavageController extends Controller
+class ApiLavageController extends Controller
 {
-    // public function __construct()
-    // {
-    //     $this->middleware('gerant');
-    // }
+    public function __construct()
+    {
+        $this->middleware('gerant');
+    }
     public function index()
     {
         $user_id = auth()->user()->id;
@@ -41,15 +36,19 @@ class LavageController extends Controller
             ]
         ]);
     }
-
     public function create()
     {
         $user_id = auth()->user()->id;
         $communes = Commune::all();
         $typesLavages = TypeLavage::where('user_id', $user_id)->get();
-        return view('pages.manager.lavages.create', compact('typesLavages', 'communes'));
+        return response()->json([
+            'message' => 'Création de lavage',
+            'data' => [
+                'communes' => $communes,
+                '$typesLavages' => $typesLavages
+            ]
+        ]);
     }
-
     public function store(Request $request) {
 
         $imageName = $request->photo->store('products');
@@ -83,8 +82,8 @@ class LavageController extends Controller
         ], 201);
 
     }
-
-    public function show($id) {
+    public function show($id)
+    {
 
         $lavage = Lavage::find($id);
         $user_id = auth()->user()->id;
@@ -120,8 +119,6 @@ class LavageController extends Controller
     public function update(Request $request, $lavage_id)
     {
 
-        dd('OK');
-
         $lavage = Lavage::find($lavage_id);
 
         if (!$lavage) {
@@ -134,55 +131,55 @@ class LavageController extends Controller
             return response()->json([ 'message' => 'OK' ]);
         }
 
-        // if(auth()->user()->id !== $lavage->user_id)
-        // {
-        //     return response()->json([
-        //         'message' => "Action non autorisée !"
-        //     ]);
-        // }
+        if(auth()->user()->id !== $lavage->user_id)
+        {
+            return response()->json([
+                'message' => "Action non autorisée !"
+            ]);
+        }
 
-        // $data = [
-        //     'lavage_name' => $request->input('lavage_name'),
-        //     'commune_id' => $request->input('commune_id'),
-        //     'status' => $request->input('status'),
-        // ];
+        $data = [
+            'lavage_name' => $request->input('lavage_name'),
+            'commune_id' => $request->input('commune_id'),
+            'status' => $request->input('status'),
+        ];
 
-        // if ($request->hasFile('photo')) {
+        if ($request->hasFile('photo')) {
 
-        //     Storage::delete($lavage->photo);
+            Storage::delete($lavage->photo);
 
-        //     $imageName = $request->file('photo')->store('products');
+            $imageName = $request->file('photo')->store('products');
 
-        //     $data['photo'] = $imageName;
-        // }
+            $data['photo'] = $imageName;
+        }
 
-        // $lavage->update($data);
+        $lavage->update($data);
 
-        // if ($request->has('type_lavage')) {
-        //     $typesLavage = $request->input('type_lavage', []);
+        if ($request->has('type_lavage')) {
+            $typesLavage = $request->input('type_lavage', []);
 
-        //     $syncData = [];
-        //     foreach ($typesLavage as $type_id) {
-        //         $syncData[$type_id] = ['user_id' => auth()->id()];
-        //     }
-        //     $lavage->typesLavage()->sync($syncData);
+            $syncData = [];
+            foreach ($typesLavage as $type_id) {
+                $syncData[$type_id] = ['user_id' => auth()->id()];
+            }
+            $lavage->typesLavage()->sync($syncData);
 
-        //     $typesToDetach = $lavage->typesLavage()->whereNotIn('type_lavage_id', $typesLavage)->pluck('type_lavage_id')->toArray();
+            $typesToDetach = $lavage->typesLavage()->whereNotIn('type_lavage_id', $typesLavage)->pluck('type_lavage_id')->toArray();
 
-        //     if (!empty($typesToDetach)) {
-        //         $lavage->typesLavage()->detach($typesToDetach);
-        //     }
+            if (!empty($typesToDetach)) {
+                $lavage->typesLavage()->detach($typesToDetach);
+            }
 
-        //     $lavage->typesLavage()->updateExistingPivot($typesLavage, ['created_at' => now(), 'updated_at' => now()]);
-        // }
+            $lavage->typesLavage()->updateExistingPivot($typesLavage, ['created_at' => now(), 'updated_at' => now()]);
+        }
 
-        // return response()->json([
-        //     'message' => 'Mise à jour effectuée avec succès',
-        //     'data' => [
-        //         'lavage' => $lavage,
-        //         'type_lavage' => $lavage->typesLavage
-        //     ]
-        // ]);
+        return response()->json([
+            'message' => 'Mise à jour effectuée avec succès',
+            'data' => [
+                'lavage' => $lavage,
+                'type_lavage' => $lavage->typesLavage
+            ]
+        ]);
     }
     public function delete($lavage_id) {
 
