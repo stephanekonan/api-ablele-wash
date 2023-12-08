@@ -3,37 +3,30 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Auth\AuthController;
-use App\Http\Controllers\Api\Employe\AuthEmployeController;
 use App\Http\Controllers\Api\Auth\UserController;
-use App\Http\Controllers\Manager\LavageController;
-use App\Http\Controllers\Manager\ProductController;
-
-use App\Http\Controllers\Api\Client\VehiculeController;
 use App\Http\Controllers\Api\Client\CommandeController;
+use App\Http\Controllers\Api\Client\VehiculeController;
+
+use App\Http\Controllers\Api\Manager\ApiLavageController;
+use App\Http\Controllers\Api\Manager\ApiEmployeController;
+use App\Http\Controllers\Api\Manager\ApiProductController;
+use App\Http\Controllers\Api\Manager\ApiCategoryController;
+use App\Http\Controllers\Api\Manager\ApiCommandeController;
+use App\Http\Controllers\Api\Manager\ApiTypeLavageController;
 
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/register', [AuthController::class, 'register']);
 
-Route::get('/client/auth/login', []);
+// Route::get('/client/auth/login', []);
 
 Route::middleware('auth:api')->group(function () {
 
     Route::get('/user', [UserController::class, 'getUser']);
     Route::get('/users', [UserController::class, 'users']);
-    Route::post('/auth/logout', [AuthController::class, 'logout']);
+    Route::post('/client/auth/logout', [AuthController::class, 'logout']);
 
-    Route::get('/lavages', [LavageController::class, 'index']);
-    Route::post('/lavage/store', [LavageController::class, 'store']);
-    Route::get('/lavage/show/{id}', [LavageController::class, 'show']);
-    Route::put('/lavage/update/{id}', [LavageController::class, 'update']);
-    Route::delete('/lavage/delete/{id}', [LavageController::class, 'delete']);
 
-    Route::get('/products', [ProductController::class, 'allproducts']);
-    Route::post('/product/store', [ProductController::class, 'store']);
-    Route::get('/product/show/{id}', [ProductController::class, 'show']);
-    Route::post('/product/update/{id}', [ProductController::class, 'update']);
-    Route::delete('/product/delete/{id}', [ProductController::class, 'deleteProduct']);
-    Route::delete('/product/photo/delete/{id}', [ProductController::class, 'deleteAlbumImage']);
+    // CLIENT ROUTES
 
     Route::get('/client/vehicules', [VehiculeController::class, 'index']);
     Route::post('/client/vehicule/store', [VehiculeController::class, 'store']);
@@ -46,5 +39,41 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/client/commande/show/{id}', [CommandeController::class, 'show']);
     Route::put('/client/commande/update/{id}', [CommandeController::class, 'update']);
     Route::delete('/client/commande/delete/{id}', [CommandeController::class, 'destroy']);
+
+    // GERANT ROUTES
+
+    Route::get('/gerant/products', [ApiProductController::class, 'index']);
+    Route::post('/gerant/product/store', [ApiProductController::class, 'store']);
+    Route::get('/gerant/product/show/{id}', [ApiProductController::class, 'show']);
+    Route::post('/gerant/product/update/{id}', [ApiProductController::class, 'update']);
+    Route::delete('/gerant/product/delete/{id}', [ApiProductController::class, 'deleteProduct']);
+    Route::delete('/gerant/product/photo/delete/{id}', [ApiProductController::class, 'deleteAlbumImage']);
+
+    Route::get('/gerant/lavages', [ApiLavageController::class, 'index']);
+    Route::post('/gerant/lavage/store', [ApiLavageController::class, 'store']);
+    Route::get('/gerant/lavage/show/{id}', [ApiLavageController::class, 'show']);
+    Route::put('/gerant/lavage/update/{id}', [ApiLavageController::class, 'update']);
+    Route::delete('/gerant/lavage/delete/{id}', [ApiLavageController::class, 'delete']);
+
+    Route::get('/gerant/categories', [ApiCategoryController::class, 'index']);
+    Route::post('/gerant/category/store', [ApiCategoryController::class, 'store']);
+    Route::put('/gerant/category/update/{id}', [ApiCategoryController::class, 'update']);
+    Route::delete('/gerant/category/delete/{id}', [ApiCategoryController::class, 'delete']);
+
+    Route::get('/gerant/commandes', [ApiCommandeController::class, 'index']);
+    Route::put('/gerant/category/edit/{id}', [ApiCommandeController::class, 'edit']);
+    Route::put('/gerant/category/show/{id}', [ApiCommandeController::class, 'show']);
+    Route::put('/gerant/category/update/{id}', [ApiCommandeController::class, 'update']);
+    Route::delete('/gerant/category/delete/{id}', [ApiCommandeController::class, 'delete']);
+
+    Route::get('/gerant/employes', [ApiEmployeController::class, 'index']);
+    Route::put('/gerant/employe/edit/{id}', [ApiEmployeController::class, 'edit']);
+    Route::put('/gerant/employe/store/{id}', [ApiEmployeController::class, 'store']);
+    Route::put('/gerant/employe/update/{id}', [ApiEmployeController::class, 'update']);
+    Route::delete('/gerant/employe/delete/{id}', [ApiEmployeController::class, 'delete']);
+
+    Route::get('/gerant/typeslavage', [ApiTypeLavageController::class, 'index']);
+    Route::put('/gerant/typelavage/store/{id}', [ApiTypeLavageController::class, 'store']);
+    Route::delete('/gerant/typelavage/delete/{id}', [ApiTypeLavageController::class, 'delete']);
 
 });

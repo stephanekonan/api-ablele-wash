@@ -75,7 +75,10 @@ class VehiculeController extends Controller
 
         $vehicule->update($request->all());
 
-        return response()->json(['message' => 'Véhicule mis à jour avec succès', 'data' => $vehicule], 200);
+        return response()->json([
+            'message' => 'Véhicule mis à jour avec succès',
+            'data' => $vehicule
+        ], 200);
     }
 
     public function destroy($id)

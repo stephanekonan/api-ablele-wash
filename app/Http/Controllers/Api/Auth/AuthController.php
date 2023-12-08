@@ -80,6 +80,11 @@ class AuthController extends Controller
     {
         $tokens = $request->user()->tokens;
 
+        if(!$tokens)
+        {
+            return response()->json([ 'message' => 'Token introuvable' ]);
+        }
+
         foreach ($tokens as $token) {
             $token->delete();
         }
