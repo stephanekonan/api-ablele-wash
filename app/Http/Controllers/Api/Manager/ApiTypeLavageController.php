@@ -15,7 +15,7 @@ class ApiTypeLavageController extends Controller
     public function index()
     {
         $user_id = auth()->user()->id;
-        $typesLavage = TypeLavage::where('user_id', $user_id);
+        $typesLavage = TypeLavage::where('user_id', $user_id)->get();
 
         return response()->json([
             'message' => 'Mes types de lavages enregistrés',
@@ -52,6 +52,7 @@ class ApiTypeLavageController extends Controller
         if(!$type)
         {
             return response()->json([ 'message' => 'Type introuvable' ], 404);
+            
         } else {
 
             $type->delete();
