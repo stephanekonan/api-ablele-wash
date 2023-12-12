@@ -49,6 +49,38 @@ class ApiLavageController extends Controller
             ]
         ]);
     }
+
+    public function edit($id) {
+        $lavage = Lavage::find($id);
+
+        if (!$lavage) {
+            return response()->json([
+                'message' => 'Lavage introuvable !'
+            ], 404);
+        }
+
+        $user_id = auth()->user()->id;
+        if ($lavage->user_id !== $user_id) {
+            return response()->json([
+                'message' => 'Vous n\'êtes pas autorisé à éditer ce lavage !'
+            ], 403);
+        }
+
+        $typesLavages = TypeLavage::where('user_id', $user_id)->get();
+
+        $associatedTypes = LavageType::where('lavage_id', $lavage->id)->pluck('type_lavage_id')->toArray();
+
+        return response()->json([
+            'message' => 'Édition du lavage: ' . $lavage->lavage_name,
+            'data' => [
+                'lavage' => $lavage,
+                'typesLavages' => $typesLavages,
+                'associatedTypes' => $associatedTypes
+            ]
+        ], 200);
+    }
+
+
     public function store(Request $request) {
 
         $imageName = $request->photo->store('products');
@@ -62,6 +94,8 @@ class ApiLavageController extends Controller
         $lavage->photo = $imageName;
         $lavage->user_id = auth()->id();
         $lavage->save();
+
+        $associatedTypes = LavageType::where('lavage_id', $lavage->id)->pluck('type_lavage_id')->toArray();
 
         if($lavage) {
             foreach ($request->type_lavage as $types_id) {
@@ -77,7 +111,8 @@ class ApiLavageController extends Controller
             'message' => 'Lavage enregistré avec succès',
             'data' => [
                 'lavage' => $lavage,
-                'typesLavage' => $typesLavage
+                'typesLavage' => $typesLavage,
+                '$associatedTypes' => $associatedTypes
             ]
         ], 201);
 
@@ -185,9 +220,14 @@ class ApiLavageController extends Controller
 
         $lavage = Lavage::find($lavage_id);
         $lavagesTypes = LavageType::where('lavage_id', $lavage_id);
+
         $lavage->delete();
+        
         $lavagesTypes->delete();
-        return redirect()->route('lavage.index');
+
+        return response()->json([
+            'message' => 'Lavage auto supprimé avec succès'
+        ]);
 
     }
 }

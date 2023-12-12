@@ -17,8 +17,6 @@ use App\Http\Controllers\Api\Manager\ApiTypeLavageController;
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/register', [AuthController::class, 'register']);
 
-// Route::get('/client/auth/login', []);
-
 Route::middleware('auth:api')->group(function () {
 
     Route::get('/user', [UserController::class, 'getUser']);
@@ -51,6 +49,7 @@ Route::middleware('auth:api')->group(function () {
 
     Route::get('/gerant/lavages', [ApiLavageController::class, 'index']);
     Route::post('/gerant/lavage/store', [ApiLavageController::class, 'store']);
+    Route::get('/gerant/lavage/edit/{id}', [ApiLavageController::class, 'edit']);
     Route::get('/gerant/lavage/show/{id}', [ApiLavageController::class, 'show']);
     Route::put('/gerant/lavage/update/{id}', [ApiLavageController::class, 'update']);
     Route::delete('/gerant/lavage/delete/{id}', [ApiLavageController::class, 'delete']);
@@ -61,10 +60,10 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('/gerant/category/delete/{id}', [ApiCategoryController::class, 'delete']);
 
     Route::get('/gerant/commandes', [ApiCommandeController::class, 'index']);
-    Route::put('/gerant/category/edit/{id}', [ApiCommandeController::class, 'edit']);
-    Route::put('/gerant/category/show/{id}', [ApiCommandeController::class, 'show']);
-    Route::put('/gerant/category/update/{id}', [ApiCommandeController::class, 'update']);
-    Route::delete('/gerant/category/delete/{id}', [ApiCommandeController::class, 'delete']);
+    Route::put('/gerant/commande/edit/{id}', [ApiCommandeController::class, 'edit']);
+    Route::put('/gerant/commande/show/{id}', [ApiCommandeController::class, 'show']);
+    Route::put('/gerant/commande/update/{id}', [ApiCommandeController::class, 'update']);
+    Route::delete('/gerant/commande/delete/{id}', [ApiCommandeController::class, 'delete']);
 
     Route::get('/gerant/employes', [ApiEmployeController::class, 'index']);
     Route::put('/gerant/employe/edit/{id}', [ApiEmployeController::class, 'edit']);
