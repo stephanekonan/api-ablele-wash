@@ -30,7 +30,7 @@ class ApiCommandeController extends Controller
 
         return $commandes;
     }
-    
+
     public function index()
     {
         $commandes = Commande::getCommandesByLavageUserId();
@@ -94,7 +94,9 @@ class ApiCommandeController extends Controller
         $commande = Commande::findOrFail($commande_id);
 
         if (!$commande) {
-            return back()->with('error', 'Véhicule non trouvé.');
+            return response()->json([
+                "message" => "La commande introuvable",
+            ]);
         }
 
         $data = [
@@ -104,7 +106,10 @@ class ApiCommandeController extends Controller
 
         $commande->update($data);
 
-        return redirect()->route('commandes.index');
+        return response()->json([
+            "message" => "La commande a bien été modifiée",
+            "data" => $commande
+        ]);
 
     }
 

@@ -79,8 +79,6 @@ class ApiLavageController extends Controller
             ]
         ], 200);
     }
-
-
     public function store(Request $request) {
 
         $imageName = $request->photo->store('products');
@@ -222,7 +220,7 @@ class ApiLavageController extends Controller
         $lavagesTypes = LavageType::where('lavage_id', $lavage_id);
 
         $lavage->delete();
-        
+
         $lavagesTypes->delete();
 
         return response()->json([
