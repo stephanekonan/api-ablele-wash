@@ -34,6 +34,7 @@ Route::middleware('auth:api')->group(function () {
 
     Route::get('/client/commandes', [CommandeController::class, 'index']);
     Route::post('/client/commande/store', [CommandeController::class, 'store']);
+    Route::get('/client/commande/edit/{id}', [CommandeController::class, 'edit']);
     Route::get('/client/commande/show/{id}', [CommandeController::class, 'show']);
     Route::put('/client/commande/update/{id}', [CommandeController::class, 'update']);
     Route::delete('/client/commande/delete/{id}', [CommandeController::class, 'destroy']);
@@ -72,7 +73,7 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('/gerant/employe/delete/{id}', [ApiEmployeController::class, 'delete']);
 
     Route::get('/gerant/typeslavage', [ApiTypeLavageController::class, 'index']);
-    Route::put('/gerant/typelavage/store/{id}', [ApiTypeLavageController::class, 'store']);
+    Route::put('/gerant/typelavage/store', [ApiTypeLavageController::class, 'store']);
     Route::delete('/gerant/typelavage/delete/{id}', [ApiTypeLavageController::class, 'delete']);
 
 });

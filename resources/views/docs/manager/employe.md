@@ -1,6 +1,7 @@
 # Documentation de l'API - Gestion des Employés
 
 ## <li>Liste de tous les employés du gérant connecté</li>
+
 Obtenez la liste de tous les employés en utilisant la méthode `GET` sur l'endpoint.
 
 **Endpoint:**
@@ -8,7 +9,6 @@ Obtenez la liste de tous les employés en utilisant la méthode `GET` sur l'endp
 ```
 /api/gerant/employes
 ```
-
 
 **Réponse JSON:**
 ```json

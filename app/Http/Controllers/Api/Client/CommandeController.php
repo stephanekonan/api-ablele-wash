@@ -20,6 +20,22 @@ class CommandeController extends Controller
         ]);
     }
 
+    public function edit($id)
+    {
+        $commande = Commande::find($id);
+
+        if (!$commande) {
+            return response()->json([
+                'message' => 'Commande non trouvée'
+            ], 404);
+        }
+
+        return response()->json([
+            'message' => 'Édition de la commande',
+            'data' => $commande
+        ], 200);
+    }
+
     public function show($id)
     {
         $commande = Commande::find($id);
