@@ -4,9 +4,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\Auth\UserController;
+use App\Http\Controllers\Api\Client\CommentController;
 use App\Http\Controllers\Api\Client\CommandeController;
-use App\Http\Controllers\Api\Client\VehiculeController;
 
+use App\Http\Controllers\Api\Client\VehiculeController;
 use App\Http\Controllers\Api\Manager\ApiLavageController;
 use App\Http\Controllers\Api\Manager\ApiEmployeController;
 use App\Http\Controllers\Api\Manager\ApiProductController;
@@ -23,7 +24,6 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/users', [UserController::class, 'users']);
     Route::post('/client/auth/logout', [AuthController::class, 'logout']);
 
-
     // CLIENT ROUTES
 
     Route::get('/client/vehicules', [VehiculeController::class, 'index']);
@@ -38,6 +38,11 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/client/commande/show/{id}', [CommandeController::class, 'show']);
     Route::put('/client/commande/update/{id}', [CommandeController::class, 'update']);
     Route::delete('/client/commande/delete/{id}', [CommandeController::class, 'destroy']);
+
+    Route::post('/client/comment/store', [CommentController::class, 'store']);
+    Route::post('/client/comment/reply', [CommentController::class, 'reply']);
+    Route::post('/client/comment/destroy/{id}', [CommentController::class, 'destroy']);
+    Route::post('/client/comment/update/{id}', [CommentController::class, 'update']);
 
     // GERANT ROUTES
 

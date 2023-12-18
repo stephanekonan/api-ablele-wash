@@ -55,22 +55,31 @@ class CommandeController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'product_id' => 'required',
             'vehicule_id' => 'required',
             'lavage_id' => 'required',
             'type_lavage_id' => 'required',
-            'status' => 'required',
-            'employe_id' => 'required',
         ]);
 
-        $request->merge(['user_id' => auth()->id()]);
+        $user_id = auth()->id();
+
+        $request->merge(['user_id' => $user_id]);
 
         $commande = Commande::create($request->all());
+
+        if($commande)
+        {
+            $user = User::find($user_id);
+            $data =  [
+                'point_fidelity' => $user->point_fidelity + 1
+            ];
+            $user->update($data);
+        }
 
         return response()->json([
             'message' => 'Commande créée avec succès',
             'data' => $commande
         ], 201);
+
     }
 
     public function update(Request $request, $id)

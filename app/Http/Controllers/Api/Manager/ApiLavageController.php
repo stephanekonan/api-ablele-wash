@@ -12,10 +12,10 @@ use Illuminate\Support\Facades\Storage;
 
 class ApiLavageController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('gerant');
-    }
+    // public function __construct()
+    // {
+    //     $this->middleware('gerant');
+    // }
     public function index()
     {
         $user_id = auth()->user()->id;
