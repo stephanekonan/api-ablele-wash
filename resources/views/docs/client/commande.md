@@ -134,7 +134,7 @@ Si une <b style="color: red">erreur</b> se produit, le code de statut HTTP fourn
 ---
 
 ## <li>Création d'une nouvelle commande</li> 
-
+A la création de la commande, point de d=fidélité de l'utilisateur sincremnente (user->point_fidelity +1)
 **Endpoint:**
 
 La méthode utilisée est ``POST``
