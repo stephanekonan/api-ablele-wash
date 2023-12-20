@@ -23,7 +23,7 @@ class CommentController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $user_id = auth()->user()->id;
+        $user_id = auth()->id();
 
         $comment = Comment::create([
             'user_id' => $user_id,
@@ -52,9 +52,9 @@ class CommentController extends Controller
         ]);
 
         $commentReply = new Comment();
-        $commentReply->content = $request->input('reply');
         $commentReply->user_id = $request->input('user_id');
         $commentReply->lavage_id = $request->input('lavage_id');
+        $commentReply->content = $request->input('contentreply');
 
         $reply = $comment->replies()->save($commentReply);
 
@@ -68,6 +68,7 @@ class CommentController extends Controller
             'message' => 'Reponse ajouté avec succès',
             'data' => $reply
         ]);
+
     }
 
     public function update(Request $request, $comment_id)
