@@ -1,7 +1,11 @@
 # Documentation API - Gestion de Commentaire
 ## Méthode store pour commentaires
 
-La méthode `post` est utilisée pour enregistrer un nouveau commentaire dans le système.
+## <span style="color:red">Méthode utilisée: `post`</span>
+
+## <span style="color:green">Enpoint: ``/client/comment/store``</span>
+
+La fonction `store` est utilisée pour enregistrer un nouveau commentaire dans le système.
 
 ## Paramètres
 
@@ -65,6 +69,10 @@ Exemple de réponse échouée:
 ```
 
 # Méthode Reply pour Commentaires
+
+## <span style="color:red">Méthode utilisée: `post`</span>
+
+## <span style="color:green">Enpoint: ``/client/comment/reply/{comment}``</span>
 
 La méthode `reply` est utilisée pour ajouter une réponse à un commentaire existant.
 
@@ -133,6 +141,10 @@ Exemple de réponse échouée:
 
 # Méthode Update pour Commentaires
 
+## <span style="color:red">Méthode utilisée: `put`</span>
+
+## <span style="color:green">Enpoint: ``/client/comment/update/{id}``</span>
+
 La méthode `update` est utilisée pour modifier le contenu d'un commentaire existant.
 
 ## Paramètres
@@ -175,6 +187,10 @@ Exemple de réponse réussie:
 ```
 
 # Méthode Destroy pour Commentaires
+
+## <span style="color:red">Méthode utilisée: `delete`</span>
+
+## <span style="color:green">Enpoint: ``/client/comment/destroy/{id}``</span>
 
 La méthode `destroy` est utilisée pour supprimer un commentaire existant.
 

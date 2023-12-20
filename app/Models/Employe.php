@@ -2,13 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+
 class Employe extends Authenticatable
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, HasApiTokens, SoftDeletes;
 
     protected $fillable = [
         'employe_name',

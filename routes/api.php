@@ -8,24 +8,24 @@ use App\Http\Controllers\Api\Client\CommentController;
 use App\Http\Controllers\Api\Client\CommandeController;
 
 use App\Http\Controllers\Api\Client\VehiculeController;
+use App\Http\Controllers\Api\Employe\AppMobileController;
 use App\Http\Controllers\Api\Manager\ApiLavageController;
 use App\Http\Controllers\Api\Manager\ApiEmployeController;
 use App\Http\Controllers\Api\Manager\ApiProductController;
+use App\Http\Controllers\Api\Employe\AuthEmployeController;
 use App\Http\Controllers\Api\Manager\ApiCategoryController;
 use App\Http\Controllers\Api\Manager\ApiCommandeController;
 use App\Http\Controllers\Api\Manager\ApiTypeLavageController;
+use App\Http\Controllers\Api\Client\RatingController;
 
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/register', [AuthController::class, 'register']);
 
 Route::middleware('auth:api')->group(function () {
-
     Route::get('/user', [UserController::class, 'getUser']);
     Route::get('/users', [UserController::class, 'users']);
     Route::post('/client/auth/logout', [AuthController::class, 'logout']);
-
     // CLIENT ROUTES
-
     Route::get('/client/vehicules', [VehiculeController::class, 'index']);
     Route::post('/client/vehicule/store', [VehiculeController::class, 'store']);
     Route::get('/client/vehicule/show/{id}', [VehiculeController::class, 'show']);
@@ -40,12 +40,15 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('/client/commande/delete/{id}', [CommandeController::class, 'destroy']);
 
     Route::post('/client/comment/store', [CommentController::class, 'store']);
-    Route::post('/client/comment/reply', [CommentController::class, 'reply']);
-    Route::post('/client/comment/destroy/{id}', [CommentController::class, 'destroy']);
-    Route::post('/client/comment/update/{id}', [CommentController::class, 'update']);
+    Route::post('/client/comment/reply/{comment}', [CommentController::class, 'reply']);
+    Route::delete('/client/comment/destroy/{id}', [CommentController::class, 'destroy']);
+    Route::put('/client/comment/update/{id}', [CommentController::class, 'update']);
+
+    Route::post('/client/rating/store', [RatingController::class, 'store']);
+    Route::delete('/client/rating/delete/{id}', [RatingController::class, 'destroy']);
+    Route::put('/client/rating/update/{id}', [RatingController::class, 'update']);
 
     // GERANT ROUTES
-
     Route::get('/gerant/products', [ApiProductController::class, 'index']);
     Route::post('/gerant/product/store', [ApiProductController::class, 'store']);
     Route::get('/gerant/product/show/{id}', [ApiProductController::class, 'show']);
@@ -81,4 +84,15 @@ Route::middleware('auth:api')->group(function () {
     Route::put('/gerant/typelavage/store', [ApiTypeLavageController::class, 'store']);
     Route::delete('/gerant/typelavage/delete/{id}', [ApiTypeLavageController::class, 'delete']);
 
+
+});
+
+Route::post('/employe/auth/login', [AuthEmployeController::class, 'login']);
+Route::delete('/employe/auth/logout', [AuthEmployeController::class, 'logout']);
+Route::get('/employe/profil', [AuthEmployeController::class, 'profil']);
+
+Route::get('/employe/commandes', [AppMobileController::class, 'commandes']);
+Route::middleware('employe:api')->group(function () {
+    Route::get('/employe/commande/edit/{id}', [AppMobileController::class, 'edit']);
+    Route::put('/employe/commande/update/{id}', [AppMobileController::class, 'update']);
 });
